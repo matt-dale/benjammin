@@ -6,35 +6,48 @@
  #include "pitches.h"
 
 float TEMPO = 1.3;
+void greenLEDState(int STATE){
+  if (STATE == 1){
+    digitalWrite(9, HIGH);
+    digitalWrite(10, HIGH);
+  }
+  if (STATE == 0){
+    digitalWrite(9, LOW);
+    digitalWrite(10, LOW);
+  }
+}
+
+void redLEDState(int STATE){
+  if (STATE == 1){
+    digitalWrite(11, HIGH);
+    digitalWrite(13, HIGH);
+  }
+  if (STATE == 0){
+    digitalWrite(11, LOW);
+    digitalWrite(13, LOW);
+  }
+}
 
 void playAMelody(int* aMelody, int* theNoteDurations, int length){
     int greenState = 0;
-    int redState = 0;
+    int redState = 1;
     for (int thisNote = 0; thisNote < length; thisNote++) {
       // to calculate the note duration, take one second 
       // divided by the note type.
       //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
       int noteDuration = 1000/theNoteDurations[thisNote];
+      greenLEDState(1);
+      redLEDState(1);
       tone(12, aMelody[thisNote],noteDuration);
-      if (greenState == 0){
-        digitalWrite(10, HIGH);
-        greenState = 1;
-      }
-      if (redState == 0){
-        digitalWrite(11, HIGH);
-        redState = 1;
-      }
       // to distinguish the notes, set a minimum time between them.
       // the note's duration + 30% seems to work well:
       int pauseBetweenNotes = noteDuration * TEMPO;
       delay(pauseBetweenNotes);
       // stop the tone playing:
       noTone(12);
-      digitalWrite(10, LOW);
-      digitalWrite(11, LOW);
-      redState = 0;
-      greenState = 0;
   }
+  greenLEDState(0);
+  redLEDState(0);
 }
 //played on startup...
 //Shave and a haircut, two bits rhythm/melody
@@ -236,7 +249,9 @@ void setup() {
   pinMode(buttonPin4, INPUT_PULLUP);
   pinMode(grn, OUTPUT);
   pinMode(red, OUTPUT);
-  playPopcorn();
+  pinMode(9, OUTPUT);
+  pinMode(13, OUTPUT);
+  playMelody();
 }
 
 void loop() {
@@ -258,7 +273,7 @@ void loop() {
     playMelody1and2and4();
   }
   else if (buttonState2 == LOW && buttonState3 == LOW && buttonState4 == LOW){
-    //playMelody2and3and4();
+    playMelody();
   }
   //two buttons pressed
   else if (buttonState1 == LOW && buttonState2 == LOW){
