@@ -8,20 +8,32 @@
 float TEMPO = 1.3;
 
 void playAMelody(int* aMelody, int* theNoteDurations, int length){
+    int greenState = 0;
+    int redState = 0;
     for (int thisNote = 0; thisNote < length; thisNote++) {
-
-    // to calculate the note duration, take one second 
-    // divided by the note type.
-    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    int noteDuration = 1000/theNoteDurations[thisNote];
-    tone(12, aMelody[thisNote],noteDuration);
-
-    // to distinguish the notes, set a minimum time between them.
-    // the note's duration + 30% seems to work well:
-    int pauseBetweenNotes = noteDuration * TEMPO;
-    delay(pauseBetweenNotes);
-    // stop the tone playing:
-    noTone(12);
+      // to calculate the note duration, take one second 
+      // divided by the note type.
+      //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+      int noteDuration = 1000/theNoteDurations[thisNote];
+      tone(12, aMelody[thisNote],noteDuration);
+      if (greenState == 0){
+        digitalWrite(10, HIGH);
+        greenState = 1;
+      }
+      if (redState == 0){
+        digitalWrite(11, HIGH);
+        redState = 1;
+      }
+      // to distinguish the notes, set a minimum time between them.
+      // the note's duration + 30% seems to work well:
+      int pauseBetweenNotes = noteDuration * TEMPO;
+      delay(pauseBetweenNotes);
+      // stop the tone playing:
+      noTone(12);
+      digitalWrite(10, LOW);
+      digitalWrite(11, LOW);
+      redState = 0;
+      greenState = 0;
   }
 }
 //played on startup...
@@ -211,8 +223,8 @@ int potVal2 = 0;
 // OUTPUT: Use digital pins 9-11, the Pulse-width Modulation (PWM) pins
 // LED's cathodes should be connected to digital GND
 // speaker + should be connected to pin 13
-int redPin = 9;   // Red LED,   connected to digital pin 9
-int grnPin = 10;  // Green LED, connected to digital pin 10
+int grn = 9;   // Red LED,   connected to digital pin 9
+int red = 10;  // Green LED, connected to digital pin 10
 int bluPin = 11;  // Blue LED,  connected to digital pin 11
 
 void setup() {
@@ -222,7 +234,9 @@ void setup() {
   pinMode(buttonPin2, INPUT_PULLUP);
   pinMode(buttonPin3, INPUT_PULLUP);
   pinMode(buttonPin4, INPUT_PULLUP);
-  playMelody();
+  pinMode(grn, OUTPUT);
+  pinMode(red, OUTPUT);
+  playPopcorn();
 }
 
 void loop() {
